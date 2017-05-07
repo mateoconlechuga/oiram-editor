@@ -37,5 +37,7 @@
         <file>resources/enemies/bowser.png</file>
         <file>resources/enemies/spike.png</file>
         <file>resources/tiles/oiram.png</file>
+        <file>resources/tiles/door_in.png</file>
+        <file>resources/tiles/door_out.png</file>
     </qresource>
 </RCC>

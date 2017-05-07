@@ -52,12 +52,13 @@ extern QPixmap *pixPipeUp;
 extern QPixmap *pixPipeDown;
 extern QPixmap *pixPipeRight;
 extern QPixmap *pixPipeLeft;
+extern QPixmap *pixDoorEnter;
+extern QPixmap *pixDoorExit;
 extern QPixmap *pixOiram;
 extern QPixmap *pixSpike;
 extern QPixmap *pixReswob;
 extern uint8_t tilemap_ids[16][16];
 extern QPixmap *tileTileset;
-extern int tmpID;
 
 extern QColor backColor;
 

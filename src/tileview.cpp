@@ -15,7 +15,6 @@ void TileView::loadTiles(QString path) {
     scene()->items().clear();
     scene()->setSceneRect(0, 0, pixTileset.width(), pixTileset.height());
 
-
     QImage gray(pixTileset.toImage());
 
     int pixels = gray.width() * gray.height();

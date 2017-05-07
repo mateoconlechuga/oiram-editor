@@ -85,6 +85,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
     connect(ui->piperight, &QToolButton::clicked, this, &MainWindow::addRightPipe);
     connect(ui->pipeleft, &QToolButton::clicked, this, &MainWindow::addLeftPipe);
     connect(ui->pipeup, &QToolButton::clicked, this, &MainWindow::addUpPipe);
+    connect(ui->doorEnter, &QToolButton::clicked, this, &MainWindow::addDoorEnter);
 
     connect(ui->actionSave, &QAction::triggered, this, &MainWindow::savePack);
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::loadPack);
@@ -96,8 +97,8 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
     connect(&authorEdit, &QLineEdit::textChanged, this, &MainWindow::setNeedSave);
     connect(&varEdit, &QLineEdit::textChanged, this, &MainWindow::setNeedSave);
 
-    connect(ui->graphicsView, &TilemapView::placedEnterPipe, this, &MainWindow::setPipeExitMode);
-    connect(ui->graphicsView, &TilemapView::placedExitPipe, this, &MainWindow::setPipeDone);
+    connect(ui->graphicsView, &TilemapView::placedEnterPipeDoor, this, &MainWindow::setPipeExitMode);
+    connect(ui->graphicsView, &TilemapView::placedExitPipeDoor, this, &MainWindow::setPipeDone);
 
     connect(ui->buttonPipeCancel, &QPushButton::clicked, this, &MainWindow::cancelPipe);
 
@@ -107,20 +108,28 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
 
 void MainWindow::setPipeEnterMode() {
     if(mode == PIPE_ENTER_MODE) { return; }
-    placingPipe = true;
-    modeStr = "pipe enter";
+    placingPipeDoor = true;
+    modeStr = "pipe/door enter";
     setMode(mode = PIPE_ENTER_MODE);
     setSelectionToolsVisible(false);
 }
 
 void MainWindow::setPipeExitMode() {
     if(mode == PIPE_EXIT_MODE) { return; }
-    placedEnterPipe = true;
-    modeStr = "pipe exit";
+    placedEnterPipeDoor = true;
+    modeStr = "pipe/door exit";
     setMode(mode = PIPE_EXIT_MODE);
     ui->graphicsView->selector.ID = 255;
     setSelectionToolsVisible(false);
     setOptions(false);
+    if (placingDoor) {
+        ui->pipedown->setEnabled(false);
+        ui->piperight->setEnabled(false);
+        ui->pipeleft->setEnabled(false);
+        ui->pipeup->setEnabled(false);
+        ui->doorEnter->setEnabled(false);
+        addDoorExit();
+    }
 }
 
 void MainWindow::setOptions(bool state) {
@@ -154,17 +163,24 @@ void MainWindow::setOptions(bool state) {
     ui->reswob->setEnabled(state);
     ui->spike->setEnabled(state);
     ui->buttonPipeCancel->setEnabled(!state);
+    if (state) {
+        ui->pipedown->setEnabled(true);
+        ui->piperight->setEnabled(true);
+        ui->pipeleft->setEnabled(true);
+        ui->pipeup->setEnabled(true);
+        ui->doorEnter->setEnabled(true);
+    }
 }
 
 void MainWindow::cancelPipe() {
-    placingPipe = placedEnterPipe = false;
+    placingPipeDoor = placedEnterPipeDoor = false;
     ui->graphicsView->removePipeEnter();
     setOptions(true);
     setBrushMode();
 }
 
 void MainWindow::setPipeDone() {
-    placingPipe = placedEnterPipe = false;
+    placingDoor = placingPipeDoor = placedEnterPipeDoor = false;
     setNeedSave();
     setOptions(true);
     setBrushMode();
@@ -315,7 +331,7 @@ bool MainWindow::savePack() {
 }
 
 void MainWindow::addDownPipe() {
-    if (placedEnterPipe) {
+    if (placedEnterPipeDoor) {
         setPipeExitMode();
     } else {
         setPipeEnterMode();
@@ -324,7 +340,7 @@ void MainWindow::addDownPipe() {
     ui->graphicsView->selector.ID = MASK_PIPE_DOWN;
 }
 void MainWindow::addRightPipe() {
-    if (placedEnterPipe) {
+    if (placedEnterPipeDoor) {
         setPipeExitMode();
     } else {
         setPipeEnterMode();
@@ -334,7 +350,7 @@ void MainWindow::addRightPipe() {
 
 }
 void MainWindow::addLeftPipe() {
-    if (placedEnterPipe) {
+    if (placedEnterPipeDoor) {
         setPipeExitMode();
     } else {
         setPipeEnterMode();
@@ -343,13 +359,26 @@ void MainWindow::addLeftPipe() {
     ui->graphicsView->selector.ID = MASK_PIPE_LEFT;
 }
 void MainWindow::addUpPipe() {
-    if (placedEnterPipe) {
+    if (placedEnterPipeDoor) {
         setPipeExitMode();
     } else {
         setPipeEnterMode();
     }
     ui->graphicsView->selector.setElement(0, 0, 2, 1, pixPipeUp);
     ui->graphicsView->selector.ID = MASK_PIPE_UP;
+}
+
+void MainWindow::addDoorEnter() {
+    setPipeEnterMode();
+    placingDoor = true;
+    ui->graphicsView->selector.setElement(0, 0, 1, 2, pixDoorEnter);
+    ui->graphicsView->selector.ID = MASK_DOOR_E;
+}
+void MainWindow::addDoorExit() {
+    setPipeExitMode();
+    placingDoor = true;
+    ui->graphicsView->selector.setElement(0, 0, 1, 2, pixDoorExit);
+    ui->graphicsView->selector.ID = MASK_DOOR_X;
 }
 
 MainWindow::~MainWindow() {
@@ -405,7 +434,7 @@ void MainWindow::setSelectionToolsVisible(bool state) {
 
 void MainWindow::setMode(int type) {
     if (mode == PIPE_ENTER_MODE) {
-        placingPipe = placedEnterPipe = false;
+        placingPipeDoor = placedEnterPipeDoor = false;
     }
     ui->graphicsView->selector.ID = 0;
     mode = type;

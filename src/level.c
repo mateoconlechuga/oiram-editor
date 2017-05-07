@@ -39,10 +39,12 @@ void initPack(void) {
         curr->b = 248;
         curr->oiramX = curr->oiramY = 255;
         for(int j=0; j<256; j++) {
-            curr->pipes[j].enabled = false;
-            curr->pipes[j].enterX = curr->pipes[j].enterY =
-            curr->pipes[j].exitX = curr->pipes[j].exitY = 255;
-            pack.level[curLevel].pipes_count--;
+            pipe_t *p = &curr->pipesDoors[j];
+            p->enabled = false;
+            p->door = false;
+            p->enterX = p->enterY =
+            p->exitX = p->exitY = 255;
+            pack.level[curLevel].pipesDoorsCount = 0;
         }
     }
 }
@@ -50,7 +52,7 @@ void initPack(void) {
 uint8_t findAvailablePipe(void) {
     uint8_t j;
     for(j=0; j<255; j++) {
-        pipe_t *curr = &pack.level[curLevel].pipes[j];
+        pipe_t *curr = &pack.level[curLevel].pipesDoors[j];
         if (!curr->enabled) {
             break;
         }
@@ -152,7 +154,7 @@ static uint16_t encode(uint8_t *in, uint8_t *out, size_t in_len) {
     return encoded_count;
 }
 
-uint8_t chkPackHasOiram() {
+uint8_t chkPackHasOiram(void) {
     for(uint8_t i=0; i<pack.count; i++) {
         if (pack.level[i].oiramX == 255 && pack.level[i].oiramY == 255) {
             return i+1;
@@ -165,18 +167,21 @@ bool loadFilePack(const char *filename, char **description, char **var, char **a
     FILE *in_file = fopen( filename, "rb" );
     uint8_t *input = NULL;
     uint16_t *level_offsets;
+    size_t s;
 
     unsigned int i;
     unsigned int offset = 0x4C;
     unsigned int levels;
     unsigned int tOffset;
+    unsigned int name_offset;
+    unsigned int author_offset;
 
     if (!in_file) { goto err; }
 
     input = calloc(0x10100, 1);
-    fread(input, 1, 0x10100, in_file);
+    s = fread(input, 1, 0x10100, in_file);
 
-    if (input[0x4A] != 0xAB || input[0x4B] != 0xCD) {
+    if (!s || input[0x4A] != 0xAB || input[0x4B] != 0xCD) {
         goto err;
     }
 
@@ -187,15 +192,15 @@ bool loadFilePack(const char *filename, char **description, char **var, char **a
             curr->data = NULL;
         }
         for (int j=0; j<255; j++) {
-            curr->pipes[j].enabled = false;
-            curr->pipes[j].enterX = curr->pipes[j].enterY =
-            curr->pipes[j].exitX = curr->pipes[j].exitY = 255;
+            curr->pipesDoors[j].enabled = false;
+            curr->pipesDoors[j].enterX = curr->pipesDoors[j].enterY =
+            curr->pipesDoors[j].exitX = curr->pipesDoors[j].exitY = 255;
         }
     }
 
-    unsigned int name_offset = offset;
+    name_offset = offset;
     offset += strlen((const char*)&input[offset]) + 1;
-    unsigned int author_offset = offset;
+    author_offset = offset;
     offset += strlen((const char*)&input[offset]) + 1;
     *description = strdup((const char*)&input[name_offset]);
     *author = strdup((const char*)&input[author_offset]);
@@ -213,32 +218,32 @@ bool loadFilePack(const char *filename, char **description, char **var, char **a
         rgb1555To888(color, &curr->r, &curr->g, &curr->b);
 
         offset += 2;
-        curr->pipes_count = input[offset++];
+        curr->pipesDoorsCount = input[offset++];
         tOffset = offset;
-        offset += curr->pipes_count * 6;
+        offset += curr->pipesDoorsCount * 6;
         curr->width = input[offset++];
         curr->height = input[offset++];
 
-        for (int k=0; k<curr->pipes_count; k++) {
-            pipe_t *thisPipe = &curr->pipes[k];
+        for (int k=0; k<curr->pipesDoorsCount; k++) {
+            pipe_t *pipeDoor = &curr->pipesDoors[k];
             unsigned int tExit, mExit;
             unsigned int tEnter, mEnter;
             tEnter = input[tOffset] | (input[tOffset+1] << 8) |  (input[tOffset+2] << 16);
-            mEnter = tEnter & ~MASK_PIPE;
+            mEnter = tEnter & ~MASK_PIPE_DOOR;
             tOffset += 3;
             tExit = input[tOffset] | (input[tOffset+1] << 8) |  (input[tOffset+2] << 16);
-            mExit = tExit & ~MASK_PIPE;
+            mExit = tExit & ~MASK_PIPE_DOOR;
             tOffset += 3;
 
-            thisPipe->enabled = true;
-            thisPipe->enterX = (mEnter % curr->width);
-            thisPipe->enterY = (mEnter / curr->width);
-            thisPipe->enterDir = tEnter & MASK_PIPE;
-            if (thisPipe->enterDir & (MASK_PIPE_LEFT | MASK_PIPE_RIGHT)) { thisPipe->enterY--; }
-            thisPipe->exitX = (mExit % curr->width);
-            thisPipe->exitY = (mExit / curr->width);
-            thisPipe->exitDir = tExit & MASK_PIPE;
-            if (thisPipe->exitDir & (MASK_PIPE_LEFT | MASK_PIPE_RIGHT)) { thisPipe->exitY--; }
+            pipeDoor->enabled = true;
+            pipeDoor->enterX = (mEnter % curr->width);
+            pipeDoor->enterY = (mEnter / curr->width);
+            pipeDoor->enterDir = tEnter & MASK_PIPE_DOOR;
+            if (pipeDoor->enterDir & (MASK_PIPE_LEFT | MASK_PIPE_RIGHT)) { pipeDoor->enterY--; }
+            pipeDoor->exitX = (mExit % curr->width);
+            pipeDoor->exitY = (mExit / curr->width);
+            pipeDoor->exitDir = tExit & MASK_PIPE_DOOR;
+            if (pipeDoor->exitDir & (MASK_PIPE_LEFT | MASK_PIPE_RIGHT)) { pipeDoor->exitY--; }
         }
         curr->data = malloc(curr->width * curr->height);
         decode(&input[offset], curr->data);
@@ -281,7 +286,7 @@ bool saveFilePack(const char *filename, const char *description, const char *var
 
     output = calloc( 0x100000, 1 );
 
-    for( i=0; i<sizeof(header); ++i) {
+    for( i=0; i<sizeof header; ++i) {
         output[i] = header[i];
     }
 
@@ -334,11 +339,11 @@ bool saveFilePack(const char *filename, const char *description, const char *var
 
         output[offset++] = color & 0xff;
         output[offset++] = color >> 8;
-        output[offset++] = curr->pipes_count;
+        output[offset++] = curr->pipesDoorsCount;
 
-        if (curr->pipes_count) {
+        if (curr->pipesDoorsCount) {
             for (int k=0; k<256; k++) {
-                pipe_t *pipe = &curr->pipes[k];
+                pipe_t *pipe = &curr->pipesDoors[k];
                 if (pipe->enabled) {
                     unsigned int offset_mask = (pipe->enterX + (pipe->enterY * curr->width)) | pipe->enterDir;
                     if (pipe->enterDir & (MASK_PIPE_LEFT | MASK_PIPE_RIGHT)) { offset_mask += curr->width; }
@@ -358,6 +363,7 @@ bool saveFilePack(const char *filename, const char *description, const char *var
         output[offset++] = curr->height;
         curr->compressed_size = encode(curr->data, &output[offset], level_data_size);
         offset += curr->compressed_size;
+
         if (i > 0) {
             level_offsets[i-1] = prev_data_size;
         }
@@ -431,16 +437,18 @@ void setLevel(uint8_t i, level_t *newLevel) {
 }
 
 bool moveLevelUp(uint8_t i) {
+    level_t temp;
     if (i == 0) { return false; }
-    level_t temp = pack.level[i];
+    temp = pack.level[i];
     pack.level[i] = pack.level[i-1];
     pack.level[i-1] = temp;
     return true;
 }
 
 bool moveLevelDown(uint8_t i) {
+    level_t temp;
     if (i > pack.count) { return false; }
-    level_t temp = pack.level[i];
+    temp = pack.level[i];
     pack.level[i] = pack.level[i+1];
     pack.level[i+1] = temp;
     return true;

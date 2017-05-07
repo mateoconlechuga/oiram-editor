@@ -35,13 +35,13 @@ public:
     void removePipeEnter();
 
     Element selector;
-    Element *pipeOverlay;
+    Element *overlay;
     bool needSave = false;
 
 signals:
     void updatePos(int x, int y, int id);
-    void placedEnterPipe();
-    void placedExitPipe();
+    void placedEnterPipeDoor();
+    void placedExitPipeDoor();
     void mouseLeft();
     void setSaveFlag();
 

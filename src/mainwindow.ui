@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>970</width>
-    <height>564</height>
+    <height>663</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -15,6 +15,10 @@
   </property>
   <property name="windowTitle">
    <string>Oiram Level Editor</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/resources/tiles/oiram.png</normaloff>:/resources/tiles/oiram.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -273,7 +277,7 @@
             <item>
              <widget class="QToolButton" name="oiram">
               <property name="text">
-               <string>Oiram</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
@@ -388,7 +392,7 @@
           <item row="1" column="3">
            <widget class="QToolButton" name="boo">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -399,7 +403,7 @@
           <item row="1" column="4">
            <widget class="QToolButton" name="chomper">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -410,7 +414,7 @@
           <item row="2" column="0">
            <widget class="QToolButton" name="green">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -427,7 +431,7 @@
           <item row="1" column="6">
            <widget class="QToolButton" name="fireball">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -438,7 +442,7 @@
           <item row="2" column="1">
            <widget class="QToolButton" name="red">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -455,7 +459,7 @@
           <item row="1" column="5">
            <widget class="QToolButton" name="firechomper">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -466,7 +470,7 @@
           <item row="1" column="0">
            <widget class="QToolButton" name="goomba">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -477,7 +481,7 @@
           <item row="1" column="1">
            <widget class="QToolButton" name="fish">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -488,7 +492,7 @@
           <item row="1" column="2">
            <widget class="QToolButton" name="spike">
             <property name="text">
-             <string>Spike</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -516,7 +520,7 @@
           <item row="2" column="3">
            <widget class="QToolButton" name="redfly">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -533,7 +537,7 @@
           <item row="2" column="4">
            <widget class="QToolButton" name="bones">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -550,7 +554,7 @@
           <item row="2" column="5">
            <widget class="QToolButton" name="thwomp">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -567,7 +571,7 @@
           <item row="2" column="6">
            <widget class="QToolButton" name="reswob">
             <property name="text">
-             <string>Boss</string>
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="resources.qrc">
@@ -587,7 +591,7 @@
        <item>
         <widget class="QGroupBox" name="groupPipes">
          <property name="title">
-          <string>Pipes</string>
+          <string>Pipes/Doors</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -610,7 +614,7 @@
             <item>
              <widget class="QToolButton" name="pipeup">
               <property name="text">
-               <string>...</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
@@ -627,7 +631,7 @@
             <item>
              <widget class="QToolButton" name="pipedown">
               <property name="text">
-               <string>...</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
@@ -644,7 +648,7 @@
             <item>
              <widget class="QToolButton" name="pipeleft">
               <property name="text">
-               <string>...</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
@@ -661,7 +665,7 @@
             <item>
              <widget class="QToolButton" name="piperight">
               <property name="text">
-               <string>...</string>
+               <string/>
               </property>
               <property name="icon">
                <iconset resource="resources.qrc">
@@ -675,6 +679,30 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QToolButton" name="doorEnter">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/resources/tiles/door_in.png</normaloff>:/resources/tiles/door_in.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>16</width>
+                <height>32</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
            </layout>
           </item>
           <item>

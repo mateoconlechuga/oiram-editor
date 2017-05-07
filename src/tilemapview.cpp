@@ -63,8 +63,8 @@ bool TilemapView::eventFilter(QObject *obj, QEvent *e) {
 }
 
 void TilemapView::removePipeEnter() {
-    scene()->removeItem(pipeOverlay);
-    delete pipeOverlay;
+    scene()->removeItem(overlay);
+    delete overlay;
     curPipe->enterX = curPipe->enterY =
     curPipe->exitX = curPipe->exitY = 255;
     curPipe->enabled = false;
@@ -99,16 +99,16 @@ void TilemapView::setID(int x, int y, int id) {
 
     // test pipes
     if (!loading) {
-        if(prev_id == 14 || prev_id == 16 || prev_id == 18 || prev_id == 20) {
+        if(prev_id == 14 || prev_id == 16 || prev_id == 18 || prev_id == 20 || prev_id == 231 || prev_id == 232) {
             QList<QGraphicsItem*> itemList = scene()->collidingItems(mTilemap[x][y], Qt::IntersectsItemShape);
             Element *currP;
             for (int i=0; i<itemList.count(); i++) {
                 Element *curr = static_cast<Element*>(itemList.at(i));
                 if (curr->isElementOrTile() == IS_ELEMENT) {
                     if (curr->getPipe()) {
-                        pipe_t *thisPipe = &pack.level[curLevel].pipes[curr->ID];
+                        pipe_t *thisPipe = &pack.level[curLevel].pipesDoors[curr->ID];
                         if (thisPipe->enabled) {
-                            pack.level[curLevel].pipes_count--;
+                            pack.level[curLevel].pipesDoorsCount--;
                             thisPipe->enabled = false;
                         }
 
@@ -267,54 +267,66 @@ void TilemapView::mousePressEvent(QMouseEvent *e) {
             } else
             if (mode == PIPE_ENTER_MODE || (mode == PIPE_EXIT_MODE && selector.ID != 255)) {
                 int id = mTilemap[xpos][ypos]->getID();
-                pipeOverlay = new Element();
+                overlay = new Element();
 
                 do {
+                    if (selector.ID & (MASK_DOOR_E | MASK_DOOR_X)) {
+                        if (id != 231 && id != 232)  {
+                            delete overlay;
+                            break;
+                        }
+                    } else
                     if (selector.ID & (MASK_PIPE_LEFT | MASK_PIPE_RIGHT)) {
                         if (id != 18 && id != 20) {
-                            delete pipeOverlay;
+                            delete overlay;
                             break;
                         }
                     } else
                     if (id != 14 && id != 16) {
-                        delete pipeOverlay;
+                        delete overlay;
                         break;
                     }
 
+                    if (selector.ID & MASK_DOOR_E) {
+                        overlay->setElement(0, 0, 1, 2, pixDoorEnter);
+                    } else
+                    if (selector.ID & MASK_DOOR_X) {
+                        overlay->setElement(0, 0, 1, 2, pixDoorExit);
+                    } else
                     if (selector.ID & MASK_PIPE_LEFT) {
-                        pipeOverlay->setElement(0, 0, 1, 2, pixPipeLeft);
+                        overlay->setElement(0, 0, 1, 2, pixPipeLeft);
                     } else
                     if (selector.ID & MASK_PIPE_RIGHT) {
-                        pipeOverlay->setElement(0, 0, 1, 2, pixPipeRight);
+                        overlay->setElement(0, 0, 1, 2, pixPipeRight);
                     } else
                     if (selector.ID & MASK_PIPE_UP) {
-                        pipeOverlay->setElement(0, 0, 2, 1, pixPipeUp);
+                        overlay->setElement(0, 0, 2, 1, pixPipeUp);
                     } else {
-                        pipeOverlay->setElement(0, 0, 2, 1, pixPipeDown);
+                        overlay->setElement(0, 0, 2, 1, pixPipeDown);
                     }
 
                     if (mode == PIPE_ENTER_MODE) {
                         pipeIndex = findAvailablePipe();
-                        curPipe = &pack.level[curLevel].pipes[pipeIndex];
+                        curPipe = &pack.level[curLevel].pipesDoors[pipeIndex];
                         curPipe->enterX = xpos;
                         curPipe->enterY = ypos;
                         curPipe->enterDir = selector.ID;
-                        placedEnterPipe();
+                        emit placedEnterPipeDoor();
                     } else {
                         curPipe->exitX = xpos;
                         curPipe->exitY = ypos;
                         curPipe->exitDir = selector.ID;
                         curPipe->enabled = true;
-                        pack.level[curLevel].pipes_count++;
-                        placedExitPipe();
+                        pack.level[curLevel].pipesDoorsCount++;
+                        emit placedExitPipeDoor();
                     }
 
-                    pipeOverlay->setPipe();
-                    pipeOverlay->setPos(xpos * TILE_WIDTH, ypos * TILE_HEIGHT);
-                    pipeOverlay->ID = pipeIndex;
-                    pipeOverlay->setHighlight(false);
-                    pipeOverlay->setZValue(15500);
-                    scene()->addItem(pipeOverlay);
+                    overlay->setPipe();
+                    overlay->setPos(xpos * TILE_WIDTH, ypos * TILE_HEIGHT);
+                    overlay->ID = pipeIndex;
+                    overlay->setHighlight(false);
+                    overlay->setZValue(15500);
+                    scene()->addItem(overlay);
                 } while(0);
             }
         }
@@ -339,7 +351,7 @@ void TilemapView::saveLevel() {
 
 void TilemapView::loadPipes() {
     for (int i=0; i<255; i++) {
-        pipe_t *thisPipe = &pack.level[curLevel].pipes[i];
+        pipe_t *thisPipe = &pack.level[curLevel].pipesDoors[i];
         if (thisPipe->enabled) {
             if (thisPipe->enterX > mWidth || thisPipe->enterY > mHeight || thisPipe->exitX > mWidth || thisPipe->exitY > mHeight) {
                 thisPipe->enabled = false;

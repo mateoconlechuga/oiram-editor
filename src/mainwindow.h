@@ -87,6 +87,9 @@ private:
     void addLeftPipe();
     void addUpPipe();
 
+    void addDoorEnter();
+    void addDoorExit();
+
     void setOptions(bool state);
 
     void setupLevelComboBox();
@@ -107,8 +110,9 @@ private:
     QDir currDir;
     QString currPath;
 
-    bool placingPipe = false;
-    bool placedEnterPipe = false;
+    bool placingPipeDoor = false;
+    bool placedEnterPipeDoor = false;
+    bool placingDoor = false;
 };
 
 #endif
