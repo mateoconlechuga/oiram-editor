@@ -43,8 +43,8 @@ void initPack(void) {
             p->enabled = false;
             p->door = false;
             p->enterX = p->enterY =
-            p->exitX = p->exitY = 255;
-            pack.level[curLevel].pipesDoorsCount = 0;
+            p->exitX = p->exitY =
+            pack.level[curLevel].pipesDoorsCount = 255;
         }
     }
 }
@@ -192,9 +192,9 @@ bool loadFilePack(const char *filename, char **description, char **var, char **a
             curr->data = NULL;
         }
         for (int j=0; j<255; j++) {
-            curr->pipesDoors[j].enabled = false;
-            curr->pipesDoors[j].enterX = curr->pipesDoors[j].enterY =
-            curr->pipesDoors[j].exitX = curr->pipesDoors[j].exitY = 255;
+            pipe_t *p = &curr->pipesDoors[j];
+            p->enabled = false;
+            p->enterX = p->enterY = p->exitX = p->exitY = 255;
         }
     }
 
