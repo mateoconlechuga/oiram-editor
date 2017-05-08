@@ -12,15 +12,12 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     descriptionLabel.setText(QStringLiteral("Description: "));
-    descriptionEdit.setText(QStringLiteral("Oiram Level Pack"));
     authorLabel.setText(QStringLiteral("Author:"));
-    authorEdit.setText(QStringLiteral("Someone"));
     varLabel.setText(QStringLiteral("Name:"));
     descriptionEdit.setMaxLength(25);
     authorEdit.setMaxLength(15);
     varEdit.setMaxLength(8);
 
-    varEdit.setText(QStringLiteral("NewPack"));
     descriptionEdit.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     varEdit.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     authorEdit.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
@@ -244,8 +241,8 @@ void MainWindow::createNew() {
     setupLevelComboBox();
     ui->graphicsView->clearSelection();
     ui->tileView->clearSelection();
-    descriptionEdit.setText(QStringLiteral("Oiram Level Pack"));
-    varEdit.setText(QStringLiteral("NewPack"));
+    descriptionEdit.clear();
+    varEdit.clear();
     ui->actionSave->setText("Save");
     currPath.clear();
     setNeedSave();
@@ -308,9 +305,9 @@ bool MainWindow::savePack() {
     QFileDialog dialog(this);
     ui->graphicsView->saveLevel();
 
-    if (!varEdit.text().compare(QStringLiteral("NewPack"))) {
+    if (varEdit.text().isEmpty() || authorEdit.text().isEmpty() || descriptionEdit.text().isEmpty()) {
         QMessageBox::information(this, QStringLiteral("Cannot save"),
-                                       QStringLiteral("You must change the pack name before saving."));
+                                       QStringLiteral("Please set the description, variable name, and author name."));
         return false;
     }
 
