@@ -112,6 +112,15 @@ void MainWindow::setPipeEnterMode() {
     modeStr = "pipe/door enter";
     setMode(mode = PIPE_ENTER_MODE);
     setSelectionToolsVisible(false);
+    if (placingDoor) {
+        setOptions(false);
+        ui->buttonPipeCancel->setEnabled(true);
+        ui->pipedown->setEnabled(false);
+        ui->piperight->setEnabled(false);
+        ui->pipeleft->setEnabled(false);
+        ui->pipeup->setEnabled(false);
+        ui->doorEnter->setEnabled(false);
+    }
 }
 
 void MainWindow::setPipeExitMode() {
@@ -123,6 +132,7 @@ void MainWindow::setPipeExitMode() {
     setSelectionToolsVisible(false);
     setOptions(false);
     if (placingDoor) {
+        ui->buttonPipeCancel->setEnabled(true);
         ui->pipedown->setEnabled(false);
         ui->piperight->setEnabled(false);
         ui->pipeleft->setEnabled(false);
@@ -173,8 +183,10 @@ void MainWindow::setOptions(bool state) {
 }
 
 void MainWindow::cancelPipe() {
-    placingPipeDoor = placedEnterPipeDoor = false;
-    ui->graphicsView->removePipeEnter();
+    if (!placingDoor || (placingDoor && placedEnterPipeDoor)) {
+        ui->graphicsView->removePipeEnter();
+    }
+    placingDoor = placingPipeDoor = placedEnterPipeDoor = false;
     setOptions(true);
     setBrushMode();
 }
@@ -369,14 +381,15 @@ void MainWindow::addUpPipe() {
 }
 
 void MainWindow::addDoorEnter() {
-    setPipeEnterMode();
+    if(mode == PIPE_EXIT_MODE || mode == PIPE_ENTER_MODE) { return; }
     placingDoor = true;
+    setPipeEnterMode();
     ui->graphicsView->selector.setElement(0, 0, 1, 2, pixDoorEnter);
     ui->graphicsView->selector.ID = MASK_DOOR_E;
 }
 void MainWindow::addDoorExit() {
-    setPipeExitMode();
     placingDoor = true;
+    setPipeExitMode();
     ui->graphicsView->selector.setElement(0, 0, 1, 2, pixDoorExit);
     ui->graphicsView->selector.ID = MASK_DOOR_X;
 }
@@ -399,6 +412,7 @@ void MainWindow::recolor() {
     pack.level[c].r = backgroundColor.red();
     pack.level[c].g = backgroundColor.green();
     pack.level[c].b = backgroundColor.blue();
+    ui->graphicsView->repaint();
 }
 
 void MainWindow::resize() {

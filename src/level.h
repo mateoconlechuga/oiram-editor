@@ -20,7 +20,6 @@ extern "C" {
 // doors are treated as pipes
 typedef struct {
     bool enabled;
-    bool door;
     uint8_t enterX, enterY;
     uint8_t exitX, exitY;
     int enterDir, exitDir;

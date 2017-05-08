@@ -41,10 +41,9 @@ void initPack(void) {
         for(int j=0; j<256; j++) {
             pipe_t *p = &curr->pipesDoors[j];
             p->enabled = false;
-            p->door = false;
             p->enterX = p->enterY =
-            p->exitX = p->exitY =
-            pack.level[curLevel].pipesDoorsCount = 255;
+            p->exitX = p->exitY = 255;
+            pack.level[curLevel].pipesDoorsCount = 0;
         }
     }
 }
@@ -191,7 +190,7 @@ bool loadFilePack(const char *filename, char **description, char **var, char **a
             free(curr->data);
             curr->data = NULL;
         }
-        for (int j=0; j<255; j++) {
+        for (unsigned int j=0; j<256; j++) {
             pipe_t *p = &curr->pipesDoors[j];
             p->enabled = false;
             p->enterX = p->enterY = p->exitX = p->exitY = 255;
@@ -224,7 +223,7 @@ bool loadFilePack(const char *filename, char **description, char **var, char **a
         curr->width = input[offset++];
         curr->height = input[offset++];
 
-        for (int k=0; k<curr->pipesDoorsCount; k++) {
+        for (unsigned int k=0; k<curr->pipesDoorsCount; k++) {
             pipe_t *pipeDoor = &curr->pipesDoors[k];
             unsigned int tExit, mExit;
             unsigned int tEnter, mEnter;
@@ -466,6 +465,7 @@ bool insertLevel(uint8_t i) {
     cur->width = 20;
     cur->height = 10;
     cur->data = malloc(20*10);
+    cur->pipesDoorsCount = 0;
     memset(cur->data, 27, 20*10);
     return true;
 }
