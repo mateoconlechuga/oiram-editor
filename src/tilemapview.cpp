@@ -145,16 +145,17 @@ void TilemapView::setID(int x, int y, int id) {
 
     if (id >= 0xf0) {
         if (id == OIRAM_ENEMY) {
-            if (!(pack.level[curLevel].oiramX == 255 && pack.level[curLevel].oiramY == 255)) {
+            level_t *l = &pack.level[curLevel];
+            if (!(l->oiramX == 255 && l->oiramY == 255)) {
                 if (oiramElement) {
                     scene()->removeItem(oiramElement);
                     delete oiramElement;
                     oiramElement = Q_NULLPTR;
                 }
-                mTilemap[pack.level[curLevel].oiramX][pack.level[curLevel].oiramY]->setID(27);
+                mTilemap[l->oiramX][l->oiramY]->setID(27);
             }
-            pack.level[curLevel].oiramX = x;
-            pack.level[curLevel].oiramY = y;
+            l->oiramX = x;
+            l->oiramY = y;
         }
         Element *overlay = new Element();
         overlay->setPos(x * TILE_WIDTH, y * TILE_HEIGHT);
@@ -359,47 +360,59 @@ void TilemapView::loadPipes() {
                 thisPipe->enterY = thisPipe->exitY = 255;
                 continue;
             }
-            Element *pipeEnter = new Element();
-            Element *pipeExit = new Element();
+            Element *overlayEnter = new Element();
+            Element *overlayExit = new Element();
 
+            if (thisPipe->enterDir & MASK_DOOR_E) {
+                overlayEnter->setElement(0, 0, 1, 2, pixDoorEnter);
+            } else
+            if (thisPipe->enterDir & MASK_DOOR_X) {
+                overlayEnter->setElement(0, 0, 1, 2, pixDoorExit);
+            } else
             if (thisPipe->enterDir & MASK_PIPE_LEFT) {
-                pipeEnter->setElement(0, 0, 1, 2, pixPipeLeft);
+                overlayEnter->setElement(0, 0, 1, 2, pixPipeLeft);
             } else
             if (thisPipe->enterDir & MASK_PIPE_RIGHT) {
-                pipeEnter->setElement(0, 0, 1, 2, pixPipeRight);
+                overlayEnter->setElement(0, 0, 1, 2, pixPipeRight);
             } else
             if (thisPipe->enterDir & MASK_PIPE_UP) {
-                pipeEnter->setElement(0, 0, 2, 1, pixPipeUp);
+                overlayEnter->setElement(0, 0, 2, 1, pixPipeUp);
             } else {
-                pipeEnter->setElement(0, 0, 2, 1, pixPipeDown);
+                overlayEnter->setElement(0, 0, 2, 1, pixPipeDown);
             }
 
-            pipeEnter->setPipe();
-            pipeEnter->setPos(thisPipe->enterX * TILE_WIDTH, thisPipe->enterY * TILE_HEIGHT);
-            pipeEnter->ID = i;
-            pipeEnter->setHighlight(false);
-            pipeEnter->setZValue(15500);
+            overlayEnter->setPipe();
+            overlayEnter->setPos(thisPipe->enterX * TILE_WIDTH, thisPipe->enterY * TILE_HEIGHT);
+            overlayEnter->ID = i;
+            overlayEnter->setHighlight(false);
+            overlayEnter->setZValue(15500);
 
+            if (thisPipe->exitDir & MASK_DOOR_E) {
+                overlayExit->setElement(0, 0, 1, 2, pixDoorEnter);
+            } else
+            if (thisPipe->exitDir & MASK_DOOR_X) {
+                overlayExit->setElement(0, 0, 1, 2, pixDoorExit);
+            } else
             if (thisPipe->exitDir & MASK_PIPE_LEFT) {
-                pipeExit->setElement(0, 0, 1, 2, pixPipeLeft);
+                overlayExit->setElement(0, 0, 1, 2, pixPipeLeft);
             } else
             if (thisPipe->exitDir & MASK_PIPE_RIGHT) {
-                pipeExit->setElement(0, 0, 1, 2, pixPipeRight);
+                overlayExit->setElement(0, 0, 1, 2, pixPipeRight);
             } else
             if (thisPipe->exitDir & MASK_PIPE_UP) {
-                pipeExit->setElement(0, 0, 2, 1, pixPipeUp);
+                overlayExit->setElement(0, 0, 2, 1, pixPipeUp);
             } else {
-                pipeExit->setElement(0, 0, 2, 1, pixPipeDown);
+                overlayExit->setElement(0, 0, 2, 1, pixPipeDown);
             }
 
-            pipeExit->setPipe();
-            pipeExit->setPos(thisPipe->exitX * TILE_WIDTH, thisPipe->exitY * TILE_HEIGHT);
-            pipeExit->ID = i;
-            pipeExit->setHighlight(false);
-            pipeExit->setZValue(15100);
+            overlayExit->setPipe();
+            overlayExit->setPos(thisPipe->exitX * TILE_WIDTH, thisPipe->exitY * TILE_HEIGHT);
+            overlayExit->ID = i;
+            overlayExit->setHighlight(false);
+            overlayExit->setZValue(15100);
 
-            scene()->addItem(pipeExit);
-            scene()->addItem(pipeEnter);
+            scene()->addItem(overlayExit);
+            scene()->addItem(overlayEnter);
         }
     }
 }

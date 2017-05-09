@@ -316,10 +316,6 @@ void initTilesetPixmap(QString path) {
     pixDoorExit = new QPixmap(":/resources/tiles/door_out.png");
     pixOiram = new QPixmap(":/resources/tiles/oiram.png");
 
-    // ice block
-    tilemap_id_loc[224*2] = 9;
-    tilemap_id_loc[224*2+1] = 12;
-
     tilemap_id_loc[225*2] = 0;
     tilemap_id_loc[225*2+1] = 13;
     tilemap_id_loc[226*2] = 1;
@@ -342,6 +338,10 @@ void initTilesetPixmap(QString path) {
     // blue blocks are stored as 238
     tilemap_id_loc[238*2] = 9;
     tilemap_id_loc[238*2+1] = 11;
+
+    // ice block
+    tilemap_id_loc[239*2] = 9;
+    tilemap_id_loc[239*2+1] = 12;
 
     tileTileset = new QPixmap(tilePath = path);
     for(unsigned int i=0; i<sizeof tilemap_id_loc; i+=2) {
