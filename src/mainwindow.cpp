@@ -136,6 +136,8 @@ void MainWindow::setPipeExitMode() {
         ui->pipeup->setEnabled(false);
         ui->doorEnter->setEnabled(false);
         addDoorExit();
+    } else {
+        ui->doorEnter->setEnabled(false);
     }
 }
 
