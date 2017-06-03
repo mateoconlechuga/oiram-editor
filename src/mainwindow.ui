@@ -783,6 +783,9 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
+   <addaction name="actionToggleGrid"/>
+   <addaction name="actionSaveImage"/>
+   <addaction name="separator"/>
    <addaction name="actionBrush"/>
    <addaction name="actionFill"/>
    <addaction name="actionSelect"/>
@@ -949,6 +952,27 @@
    </property>
    <property name="visible">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionToggleGrid">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/resources/icons/grid.png</normaloff>:/resources/icons/grid.png</iconset>
+   </property>
+   <property name="text">
+    <string>Toggle Grid</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionSaveImage">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/resources/icons/picture.png</normaloff>:/resources/icons/picture.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save Image</string>
    </property>
   </action>
  </widget>

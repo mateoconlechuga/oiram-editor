@@ -39,5 +39,7 @@
         <file>resources/tiles/oiram.png</file>
         <file>resources/tiles/door_in.png</file>
         <file>resources/tiles/door_out.png</file>
+        <file>resources/icons/picture.png</file>
+        <file>resources/icons/grid.png</file>
     </qresource>
 </RCC>

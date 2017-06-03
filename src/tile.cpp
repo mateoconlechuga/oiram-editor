@@ -5,8 +5,9 @@
 #include "utils.h"
 #include "level.h"
 
-Tile::Tile(int newID) {
+Tile::Tile(bool onGrid, int newID) {
     id = newID;
+    gridOn = onGrid;
     setFlags(ItemIsSelectable);
 }
 
@@ -21,6 +22,11 @@ void Tile::setID(int newID) {
 QRectF Tile::boundingRect() const {
     return QRectF(0, 0, TILE_WIDTH, TILE_HEIGHT);
 }
+
+void Tile::setGrid(bool state) {
+    gridOn = state;
+}
+
 
 QPainterPath Tile::shape() const {
     QPainterPath mPath;
@@ -40,6 +46,8 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         painter->fillRect(0, 0, TILE_WIDTH, TILE_HEIGHT, QColor(50,0,200,90));
     }
 
-    painter->setPen(QPen(QBrush(QColor(0,0,0,70)), 1, Qt::DashLine));
-    painter->drawRect(0, 0, TILE_WIDTH, TILE_HEIGHT);
+    if (gridOn) {
+        painter->setPen(QPen(QBrush(QColor(0,0,0,70)), 1, Qt::DashLine));
+        painter->drawRect(0, 0, TILE_WIDTH, TILE_HEIGHT);
+    }
 }

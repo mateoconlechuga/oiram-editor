@@ -576,6 +576,18 @@ void TilemapView::drawForeground(QPainter *painter, const QRectF &rect) {
     QGraphicsView::drawForeground(painter, rect);
 }
 
+void TilemapView::toggleGrid() {
+    gridEnabled = !gridEnabled;
+    for(int i=0;i<mWidth;i++) {
+        for(int j=0; j<mHeight; j++) {
+            mTilemap[i][j]->setGrid(gridEnabled);
+        }
+    }
+    repaint();
+    update();
+    viewport()->update();
+}
+
 bool TilemapView::resize(int width, int height) {
     if(!loading) { if (width == mWidth && height == mHeight) { return true; } }
     // don't allow maps greater than 10K in size
@@ -595,7 +607,7 @@ bool TilemapView::resize(int width, int height) {
         for(int i=0;i<width;i++) {
             mTilemap[i] = new Tile*[height];
             for(int j=0; j<height; j++) {
-                mTilemap[i][j] = new Tile();
+                mTilemap[i][j] = new Tile(gridEnabled);
                 scene()->addItem(mTilemap[i][j]);
                 mTilemap[i][j]->setPos(i * TILE_WIDTH, j * TILE_HEIGHT);
             }
@@ -612,7 +624,7 @@ bool TilemapView::resize(int width, int height) {
         for(int i=0; i<width; i++) {
             pTilemap[i] = new Tile*[height];
             for(int j=0; j<height; j++) {
-                pTilemap[i][j] = new Tile();
+                pTilemap[i][j] = new Tile(gridEnabled);
                 if(i < mWidth && j < mHeight) {
                     pTilemap[i][j]->setID(mTilemap[i][j]->getID());
                 }

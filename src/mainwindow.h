@@ -32,6 +32,9 @@ public slots:
 protected:
     virtual void closeEvent(QCloseEvent *e) Q_DECL_OVERRIDE;
 
+private slots:
+    void saveImage();
+
 private:
     void setLevelColor();
     void setLevel(uint8_t level);

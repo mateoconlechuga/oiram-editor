@@ -8,7 +8,7 @@
 class Tile : public QGraphicsItem {
 
 public:
-    explicit Tile(int newID = 27);
+    explicit Tile(bool onGrid, int newID = 27);
     uint8_t getID();
     void setID(int newID);
     virtual int isElementOrTile() { return IS_TILE; }
@@ -16,9 +16,11 @@ public:
     QPainterPath shape() const;
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void setGrid(bool state);
 
 private:
     int id;
+    bool gridOn;
 };
 
 #endif

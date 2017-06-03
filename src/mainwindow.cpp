@@ -88,6 +88,9 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::loadPack);
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::createNew);
 
+    connect(ui->actionToggleGrid, &QAction::triggered, ui->graphicsView, &TilemapView::toggleGrid);
+    connect(ui->actionSaveImage, &QAction::triggered, this, &MainWindow::saveImage);
+
     connect(ui->comboLevels, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::changeLevel);
 
     connect(&descriptionEdit, &QLineEdit::textChanged, this, &MainWindow::setNeedSave);
@@ -101,6 +104,26 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
 
     setBrushMode();
     clrNeedSave();
+}
+
+void MainWindow::saveImage() {
+    QFileDialog dialog(this, "Save Image");
+    dialog.setNameFilter("PNG (*.png)");
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setDirectory(QCoreApplication::applicationDirPath());
+    dialog.setDefaultSuffix("png");
+    if (!dialog.exec()) {
+        return;
+    }
+    QString fileName = dialog.selectedFiles().first();
+
+    if (!fileName.isNull()) {
+        QImage image(ui->graphicsView->scene()->sceneRect().size().toSize(), QImage::Format_ARGB32);
+        QPainter painter(&image);
+        ui->graphicsView->scene()->render(&painter);
+        image.save(fileName);
+    }
 }
 
 void MainWindow::setPipeEnterMode() {
@@ -412,6 +435,7 @@ void MainWindow::recolor() {
     pack.level[c].g = backgroundColor.green();
     pack.level[c].b = backgroundColor.blue();
     ui->graphicsView->repaint();
+    ui->graphicsView->viewport()->update();
 }
 
 void MainWindow::resize() {

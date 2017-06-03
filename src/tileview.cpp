@@ -41,7 +41,7 @@ void TileView::loadTiles(QString path) {
     for(int i=0; i<mWidth; i++) {
         mTiles[i] = new Tile*[mHeight];
         for(int j=0; j<mHeight; j++) {
-            mTiles[i][j] = new Tile(tilemap_ids[i][j]);
+            mTiles[i][j] = new Tile(true, tilemap_ids[i][j]);
             scene()->addItem(mTiles[i][j]);
             mTiles[i][j]->setPos(i * TILE_WIDTH, j * TILE_HEIGHT);
         }

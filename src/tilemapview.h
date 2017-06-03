@@ -33,6 +33,7 @@ public:
     void setID(int x, int y, int id);
     void deleteTilemapData();
     void removePipeEnter();
+    void toggleGrid();
 
     Element selector;
     Element *overlay;
@@ -92,6 +93,7 @@ private:
     level_t level;
 
     bool inDrag = false;
+    bool gridEnabled = true;
     uint8_t pipeIndex;
     pipe_t *curPipe;
     QList<Element*> pipeElements;
