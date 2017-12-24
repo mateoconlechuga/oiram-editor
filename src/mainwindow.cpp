@@ -92,6 +92,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
     connect(ui->actionSaveImage, &QAction::triggered, this, &MainWindow::saveImage);
 
     connect(ui->comboLevels, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::changeLevel);
+    connect(ui->comboScroll, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::changeScroll);
 
     connect(&descriptionEdit, &QLineEdit::textChanged, this, &MainWindow::setNeedSave);
     connect(&authorEdit, &QLineEdit::textChanged, this, &MainWindow::setNeedSave);
@@ -513,6 +514,12 @@ void MainWindow::changeLevel(int newLevel) {
         setLevel(static_cast<uint8_t>(newLevel));
         setResizeSpins();
     }
+}
+
+void MainWindow::changeScroll(int scroll) {
+    int c = ui->comboLevels->currentIndex();
+    pack.level[c].scroll = scroll;
+    setNeedSave();
 }
 
 void MainWindow::addLevel() {

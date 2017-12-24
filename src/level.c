@@ -31,13 +31,14 @@ void initPack(void) {
     pack.count = 0;
     pack.level = malloc(sizeof(level_t)*256);
 
-    for(int i=0; i < 256; i++) {
+    for(int i = 0; i < 256; i++) {
         level_t *curr = &pack.level[i];
         curr->data = NULL;
         curr->r = 176;
         curr->g = 224;
         curr->b = 248;
         curr->oiramX = curr->oiramY = 255;
+        curr->scroll = SCROLL_NONE;
         for(int j=0; j<256; j++) {
             pipe_t *p = &curr->pipesDoors[j];
             p->enabled = false;
@@ -49,25 +50,27 @@ void initPack(void) {
 }
 
 uint8_t findAvailablePipe(void) {
-    uint8_t j;
-    for(j=0; j<255; j++) {
+    unsigned int j;
+    for (j = 0; j < 256; j++) {
         pipe_t *curr = &pack.level[curLevel].pipesDoors[j];
         if (!curr->enabled) {
             break;
         }
     }
-    return j;
+    return (uint8_t)j;
 }
 
 static uint16_t decode(uint8_t *in, uint8_t *out) {
     uint8_t c, i, cnt;
     uint16_t decompressed_size = 0;
 
-    for(;;) {
+    for (;;) {
         c = *in;
         in++;
-        if (c == 255) return decompressed_size;
         if (c > 128) {
+            if (c == 255) {
+                return decompressed_size;
+            }
             cnt = c - 128;
             for (i = 0; i < cnt; i++) {
                 *out = *in;
@@ -94,7 +97,9 @@ static uint16_t encode(uint8_t *in, uint8_t *out, size_t in_len) {
 
     while (!end) {
         end = !(in_len);
-        c = *in;
+        if (!end) {
+            c = *in;
+        }
         in++;
         in_len--;
 
@@ -305,6 +310,8 @@ bool saveFilePack(const char *filename, const char *description, const char *var
      * offsets to each compressed level    ( #levels*2 bytes )
      *  Level format
      *  color                              ( 2 bytes )
+     *  indicator byte for scroll          ( 1 byte == 255 )
+     *  scroll direction                   ( 1 byte <= 2 )
      *  #pipes                             ( 1 byte )
      *  pipe information                   ( #pipes*3 )
      *
@@ -331,13 +338,22 @@ bool saveFilePack(const char *filename, const char *description, const char *var
 
     for (i=0; i<pack.count; i++) {
         level_t *curr = &pack.level[i];
-        size_t level_data_size = curr->height*curr->width;
+        size_t level_data_size = curr->height * curr->width;
         size_t prev_data_size;
 
         uint16_t color = rgb888To1555(curr->r, curr->g, curr->b);
 
+        // write color
         output[offset++] = color & 0xff;
         output[offset++] = color >> 8;
+
+        // set scroll
+        if (curr->scroll) {
+            output[offset++] = 255;
+            output[offset++] = curr->scroll;
+        }
+
+        // write # of pipes
         output[offset++] = curr->pipesDoorsCount;
 
         if (curr->pipesDoorsCount) {

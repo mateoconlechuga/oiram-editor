@@ -53,6 +53,7 @@ private:
     void addLevel();
     void deleteLevel();
     void changeLevel(int newLevel);
+    void changeScroll(int scroll);
     void levelUp();
     void levelDown();
     void setResizeSpins();

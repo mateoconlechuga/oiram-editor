@@ -33,12 +33,21 @@ typedef struct {
     int r,g,b;
     unsigned int compressed_size;
     uint8_t oiramX, oiramY;
+    uint8_t scroll;
 } level_t;
 
 typedef struct {
     level_t *level;
     unsigned int count;
 } level_pack_t;
+
+enum autoscroll {
+    SCROLL_NONE=0,
+    SCROLL_RIGHT,
+    SCROLL_LEFT,
+    SCROLL_DOWN,
+    SCROLL_UP
+};
 
 extern level_pack_t pack;
 extern uint8_t curLevel;

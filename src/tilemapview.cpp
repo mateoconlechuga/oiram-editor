@@ -642,10 +642,10 @@ bool TilemapView::resize(int width, int height) {
         }
 
         for(int i=0; i<mWidth; i++) {
-            delete mTilemap[i];
+            delete[] mTilemap[i];
         }
 
-        delete mTilemap;
+        delete[] mTilemap;
 
         mTilemap = pTilemap;
 
