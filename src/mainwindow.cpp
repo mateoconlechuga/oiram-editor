@@ -250,9 +250,13 @@ void MainWindow::setupLevelComboBox() {
 }
 
 void MainWindow::setLevel(uint8_t level) {
+    level_t *e = &pack.level[level];
     ui->graphicsView->loadLevel(curLevel = level);
-    ui->spinWidth->setValue(pack.level[level].width);
-    ui->spinHeight->setValue(pack.level[level].height);
+    ui->spinWidth->setValue(e->width);
+    ui->spinHeight->setValue(e->height);
+    ui->comboScroll->blockSignals(true);
+    ui->comboScroll->setCurrentIndex(e->scroll);
+    ui->comboScroll->blockSignals(false);
     setLevelColor();
 }
 
@@ -535,7 +539,9 @@ void MainWindow::addLevel() {
     pack.level[c].b = 248;
 
     ui->comboLevels->blockSignals(true);
+    ui->comboScroll->blockSignals(true);
     ui->comboLevels->clear();
+    ui->comboScroll->setCurrentIndex(0);
 
     int max = static_cast<int>(pack.count);
     for(int i=1; i<=max; i++) {
@@ -543,6 +549,7 @@ void MainWindow::addLevel() {
     }
 
     ui->comboLevels->blockSignals(false);
+    ui->comboScroll->blockSignals(false);
 
     if (pack.count != 1) {
         ui->comboLevels->setCurrentIndex(c);
@@ -567,7 +574,7 @@ void MainWindow::deleteLevel() {
     setupLevelComboBox();
 
     ui->comboLevels->blockSignals(true);
-    if(current) { ui->comboLevels->setCurrentIndex(current-1); }
+    if (current) { ui->comboLevels->setCurrentIndex(current-1); }
     ui->comboLevels->blockSignals(false);
 
     if (current) {

@@ -222,6 +222,11 @@ bool loadFilePack(const char *filename, char **description, char **var, char **a
         rgb1555To888(color, &curr->r, &curr->g, &curr->b);
 
         offset += 2;
+        if (input[offset] == 255) {
+            offset++;
+            curr->scroll = input[offset];
+            offset++;
+        }
         curr->pipesDoorsCount = input[offset++];
         tOffset = offset;
         offset += curr->pipesDoorsCount * 6;
@@ -480,6 +485,7 @@ bool insertLevel(uint8_t i) {
 
     cur->width = 20;
     cur->height = 10;
+    cur->scroll = SCROLL_NONE;
     cur->data = malloc(20*10);
     cur->pipesDoorsCount = 0;
     memset(cur->data, 27, 20*10);
