@@ -404,6 +404,9 @@ bool saveFilePack(const char *filename, const char *description, const char *var
     unsigned int author_length = strlen(author);
     int data_length;
     int output_size;
+    size_t prev_data_size;
+    size_t level_data_size;
+    uint16_t color;
 
     out_file = fopen( filename, "wb" );
     if (!out_file) { goto err; }
@@ -463,10 +466,8 @@ bool saveFilePack(const char *filename, const char *description, const char *var
 
     for (i=0; i<pack.count; i++) {
         level_t *curr = &pack.level[i];
-        size_t level_data_size = curr->height * curr->width;
-        size_t prev_data_size;
-
-        uint16_t color = rgb888To1555(curr->r, curr->g, curr->b);
+        level_data_size = curr->height * curr->width;
+        color = rgb888To1555(curr->r, curr->g, curr->b);
 
         // write color
         output[offset++] = color & 0xff;
