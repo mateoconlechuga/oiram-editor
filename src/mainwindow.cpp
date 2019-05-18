@@ -360,6 +360,7 @@ void MainWindow::loadPack() {
 bool MainWindow::savePack() {
     QFileDialog dialog(this);
     ui->graphicsView->saveLevel();
+    uint32_t hash;
 
     if (varEdit.text().isEmpty() || authorEdit.text().isEmpty() || descriptionEdit.text().isEmpty()) {
         QMessageBox::information(this, QStringLiteral("Cannot save"),
@@ -369,7 +370,12 @@ bool MainWindow::savePack() {
 
     if (ui->graphicsView->needSave == false) { return false; }
 
-    uint32_t hash = computeHash(reinterpret_cast<const uint8_t*>(passwordStr.toStdString().c_str()), passwordStr.length());
+    if (passwordStr.isEmpty()) {
+        hash = 0;
+    } else {
+        hash = computeHash(reinterpret_cast<const uint8_t*>(passwordStr.toStdString().c_str()), passwordStr.length());
+    }
+
     if (currPath.isEmpty()) {
 
         dialog.setAcceptMode(QFileDialog::AcceptSave);
