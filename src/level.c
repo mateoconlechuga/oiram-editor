@@ -314,7 +314,7 @@ bool loadFilePack(const char *filename, char **description, char **var, char **a
         }
     }
 
-    if (input[0x4B] != PACK_VERSION_MAGIC_1) {
+    if (input[0x4B] == PACK_VERSION_MAGIC_1) {
         offset += sizeof(uint32_t);
     }
     name_offset = offset;
