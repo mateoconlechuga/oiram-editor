@@ -1,6 +1,8 @@
 #include <QColorDialog>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QInputDialog>
+#include <QLineEdit>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -37,6 +39,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
     connect(ui->graphicsView, &TilemapView::updatePos, this, &MainWindow::updatePos);
     connect(ui->tileView, &TileView::selectionUpdated, ui->graphicsView, &TilemapView::selectionUpdated);
 
+    connect(ui->actionChangePassword, &QAction::triggered, this, &MainWindow::setPassword);
     connect(ui->actionBrush, &QAction::triggered, this, &MainWindow::setBrushMode);
     connect(ui->actionFill, &QAction::triggered, this, &MainWindow::setFillMode);
     connect(ui->actionSelect, &QAction::triggered, this, &MainWindow::setSelectMode);
@@ -273,6 +276,7 @@ void MainWindow::createNew() {
     ui->tileView->clearSelection();
     descriptionEdit.clear();
     varEdit.clear();
+    passwordStr.clear();
     ui->actionSave->setText("Save");
     currPath.clear();
     setNeedSave();
@@ -303,6 +307,18 @@ void MainWindow::setResizeSpins() {
     ui->spinWidth->setValue(pack.level[i].width);
 }
 
+void MainWindow::loadPackData(const QString &path) {
+    char *new_desc, *new_var, *new_author;
+    if (loadFilePack(path.toStdString().c_str(), &new_desc, &new_var, &new_author)) {
+        varEdit.setText(QString::fromLatin1(new_var));
+        descriptionEdit.setText(QString::fromLatin1(new_desc));
+        authorEdit.setText(QString::fromLatin1(new_author));
+        setupLevelComboBox();
+        setLevel(0);
+        clrNeedSave();
+    }
+}
+
 void MainWindow::loadPack() {
     QFileDialog dialog(this);
 
@@ -316,16 +332,26 @@ void MainWindow::loadPack() {
     dialog.setDefaultSuffix(QStringLiteral("8xv"));
 
     if (dialog.exec()) {
-        char *new_desc, *new_var, *new_author;
+        uint32_t hash;
         currPath = dialog.selectedFiles().first();
         ui->actionSave->setText(currPath);
-        if (loadFilePack(currPath.toStdString().c_str(), &new_desc, &new_var, &new_author)) {
-            varEdit.setText(QString::fromLatin1(new_var));
-            descriptionEdit.setText(QString::fromLatin1(new_desc));
-            authorEdit.setText(QString::fromLatin1(new_author));
-            setupLevelComboBox();
-            setLevel(0);
-            clrNeedSave();
+        if (getPackMetadata(currPath.toStdString().c_str(), &hash)) {
+            if (hash) {
+                bool ok;
+                QString passwd = QInputDialog::getText(this, QStringLiteral("Pack Password"), QStringLiteral("Pack is password protected. Please input password to unlock."), QLineEdit::Normal, QString(), &ok);
+                if (ok && !passwd.isEmpty()) {
+                    uint32_t check = computeHash(reinterpret_cast<const uint8_t*>(passwd.toStdString().c_str()), passwd.length());
+                    if (check == hash) {
+                        passwordStr = passwd;
+                        loadPackData(currPath);
+                    } else {
+                        QMessageBox::warning(this, "Incorrect Password", "Incorrect Password specified.");
+                        setNeedSave();
+                    }
+                }
+            } else {
+                loadPackData(currPath);
+            }
         }
     }
     currDir = dialog.directory();
@@ -343,6 +369,7 @@ bool MainWindow::savePack() {
 
     if (ui->graphicsView->needSave == false) { return false; }
 
+    uint32_t hash = computeHash(reinterpret_cast<const uint8_t*>(passwordStr.toStdString().c_str()), passwordStr.length());
     if (currPath.isEmpty()) {
 
         dialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -356,13 +383,13 @@ bool MainWindow::savePack() {
         if (dialog.exec()) {
             currPath = dialog.selectedFiles().first();
             ui->actionSave->setText(currPath);
-            if (saveFilePack(currPath.toStdString().c_str(), descriptionEdit.text().toStdString().c_str(), varEdit.text().toStdString().c_str(), authorEdit.text().toStdString().c_str())) {
+            if (saveFilePack(currPath.toStdString().c_str(), descriptionEdit.text().toStdString().c_str(), varEdit.text().toStdString().c_str(), authorEdit.text().toStdString().c_str(), hash)) {
                 clrNeedSave();
             }
         }
         currDir = dialog.directory();
     } else {
-        if (saveFilePack(currPath.toStdString().c_str(), descriptionEdit.text().toStdString().c_str(), varEdit.text().toStdString().c_str(), authorEdit.text().toStdString().c_str())) {
+        if (saveFilePack(currPath.toStdString().c_str(), descriptionEdit.text().toStdString().c_str(), varEdit.text().toStdString().c_str(), authorEdit.text().toStdString().c_str(), hash)) {
             clrNeedSave();
         }
     }
@@ -465,6 +492,14 @@ void MainWindow::setSelectMode() {
     mode = SELECT_MODE;
     setMode(SELECT_MODE);
     setSelectionToolsVisible(true);
+}
+void MainWindow::setPassword() {
+    bool ok;
+    QString passwd = QInputDialog::getText(this, QStringLiteral("Pack Password"), QStringLiteral("Input Pack editing password:"), QLineEdit::Normal, passwordStr, &ok);
+    if (ok && !passwd.isEmpty()) {
+        passwordStr = passwd;
+        setNeedSave();
+    }
 }
 
 void MainWindow::setSelectionToolsVisible(bool state) {

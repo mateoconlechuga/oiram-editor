@@ -41,5 +41,6 @@
         <file>resources/tiles/door_out.png</file>
         <file>resources/icons/picture.png</file>
         <file>resources/icons/grid.png</file>
+        <file>resources/icons/key.png</file>
     </qresource>
 </RCC>

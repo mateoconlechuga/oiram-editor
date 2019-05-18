@@ -43,6 +43,7 @@ private:
 
     void clrNeedSave();
     bool checkSave();
+    void loadPackData(const QString &path);
     void loadPack();
     bool savePack();
 
@@ -57,6 +58,7 @@ private:
     void levelUp();
     void levelDown();
     void setResizeSpins();
+    void setPassword();
 
     void setSelectionToolsVisible(bool state);
 
@@ -103,6 +105,7 @@ private:
     QGraphicsScene tileScene;
     QLabel statusLabel;
     QString modeStr;
+    QString passwordStr;
     int mode;
     QColor backgroundColor;
     QLineEdit descriptionEdit;

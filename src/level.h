@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <string.h>
 
 #define TILE_WIDTH       (16)
 #define TILE_HEIGHT      (16)
@@ -53,9 +54,11 @@ extern level_pack_t pack;
 extern uint8_t curLevel;
 
 void deletePack(void);
+uint32_t computeHash(const uint8_t *buf, int len);
 
+bool getPackMetadata(const char *filename, uint32_t *data);
 bool loadFilePack(const char *filename, char **description, char **var, char **author);
-bool saveFilePack(const char *filename, const char *description, const char *varname, const char *author);
+bool saveFilePack(const char *filename, const char *description, const char *varname, const char *author, uint32_t hash);
 void setLevel(uint8_t i, level_t *level);
 level_t *getLevel(uint8_t i);
 void removeLevel(uint8_t i);

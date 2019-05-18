@@ -813,6 +813,7 @@
    <addaction name="separator"/>
    <addaction name="actionToggleGrid"/>
    <addaction name="actionSaveImage"/>
+   <addaction name="actionChangePassword"/>
    <addaction name="separator"/>
    <addaction name="actionBrush"/>
    <addaction name="actionFill"/>
@@ -1001,6 +1002,18 @@
    </property>
    <property name="text">
     <string>Save Image</string>
+   </property>
+  </action>
+  <action name="actionChangePassword">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/resources/icons/key.png</normaloff>:/resources/icons/key.png</iconset>
+   </property>
+   <property name="text">
+    <string>Change Password</string>
+   </property>
+   <property name="toolTip">
+    <string>Change Password</string>
    </property>
   </action>
  </widget>
