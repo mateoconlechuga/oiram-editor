@@ -1,0 +1,55 @@
+# AppVeyor CI config
+
+environment:
+  QT5_BIN_DIR_STATIC_32: C:\Qt\Qt5.12.0-static\bin
+  QT5_BIN_DIR_STATIC_64: C:\Qt\Qt5.12.0x64-static\bin
+  TARGET_PRO: .\src\OiramLevelEditor.pro
+
+install:
+  - C:\Python35\Scripts\pip install requests jinja2
+  - C:\Python35\python -u .\scripts\appveyor_helper.py install
+  - cmd: set VCPKG_PLATFORM_TOOLSET=v140
+  - md build_static_32
+  - md build_static_64
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+build_script:
+  - setlocal
+
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
+
+  - cd build_static_32
+  - '%QT5_BIN_DIR_STATIC_32%\qmake -spec win32-msvc -tp vc "..\src\OiramLevelEditor.pro"'
+  - msbuild OiramLevelEditor.vcxproj /p:Configuration=Release /p:VcpkgTriplet=x86-windows-static
+  - cd ..
+
+  - endlocal
+  - setlocal
+
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+
+  - cd build_static_64
+  - '%QT5_BIN_DIR_STATIC_64%\qmake -spec win32-msvc -tp vc "..\src\OiramLevelEditor.pro"'
+  - msbuild OiramLevelEditor.vcxproj /p:Configuration=Release /p:Platform="x64" /p:VcpkgTriplet=x64-windows-static
+  - cd ..
+  
+  - endlocal
+
+after_build:
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+on_success:
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+on_failure:
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+artifacts:
+ - path: build_static_32\release\OiramLevelEditor.exe
+   name: static_32_release
+   type: zip
+ 
+ - path: build_static_64\release\OiramLevelEditor.exe
+   name: static_64_release
+   type: zip
+

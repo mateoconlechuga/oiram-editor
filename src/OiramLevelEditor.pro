@@ -2,6 +2,7 @@ lessThan(QT_MAJOR_VERSION, 5) : error("You need at least Qt 5.6 to build!")
 lessThan(QT_MINOR_VERSION, 6) : error("You need at least Qt 5.6 to build!")
 
 QT       += core gui widgets
+CONFIG   += c++11 console
 
 TARGET = OiramLevelEditor
 TEMPLATE = app
@@ -29,7 +30,13 @@ if (!win32-msvc*) {
     # TODO: add equivalent flags
     # Example for -Werror=shadow: /weC4456 /weC4457 /weC4458 /weC4459
     #     Source: https://connect.microsoft.com/VisualStudio/feedback/details/1355600/
-    QMAKE_CXXFLAGS  += /Wall
+    # /wd5045: disable C5045
+    #          (new warning that causes errors: "Compiler will insert Spectre mitigation
+    #          for memory load if /Qspectre switch specified")
+    QMAKE_CXXFLAGS  += /Wall /wd5045
+
+    # Add -MP to enable speedier builds
+    QMAKE_CXXFLAGS += /MP
 }
 
 if (macx|linux) {
@@ -47,8 +54,9 @@ QMAKE_CXXFLAGS  += $$GLOBAL_FLAGS
 QMAKE_LFLAGS    += $$GLOBAL_FLAGS
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
+SOURCES += \
+    main.cpp\
+    mainwindow.cpp \
     tilemapview.cpp \
     tile.cpp \
     element.cpp \
@@ -56,7 +64,8 @@ SOURCES += main.cpp\
     utils.cpp \
     level.c
 
-HEADERS  += mainwindow.h \
+HEADERS += \
+    mainwindow.h \
     tilemapview.h \
     tile.h \
     element.h \
@@ -64,7 +73,7 @@ HEADERS  += mainwindow.h \
     utils.h \
     level.h
 
-FORMS    += mainwindow.ui
+FORMS += mainwindow.ui
 
 RESOURCES += \
     resources.qrc
