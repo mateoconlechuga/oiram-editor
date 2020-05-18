@@ -14,7 +14,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Oiram Level Editor</string>
+   <string>Oiram Level Editor v1.6</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
