@@ -197,7 +197,7 @@ static uint16_t encode(uint8_t *in, uint8_t *out, size_t in_len) {
                 len = 1;
             }
         } else {
-            if (buf[len - 1] == buf[len - 2]) {
+            if (!end && buf[len - 1] == buf[len - 2]) {
                 repeat = 1;
                 if (len > 2) {
                     *out = 128 + len - 2;

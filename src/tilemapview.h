@@ -68,17 +68,17 @@ private:
 
     int mode;
 
-    int mWidth;
-    int mHeight;
+    int mWidth = 0;
+    int mHeight = 0;
     bool hold = false;
     int posX = 0, posY = 0;
 
-    int startx;
-    int starty;
-    int endLoopX;
-    int startLoopX;
-    int startLoopY;
-    int endLoopY;
+    int startx = 0;
+    int starty = 0;
+    int endLoopX = 0;
+    int startLoopX = 0;
+    int startLoopY = 0;
+    int endLoopY = 0;
 
     Tile ***mTilemap = Q_NULLPTR;
     uint8_t *mData = Q_NULLPTR;
