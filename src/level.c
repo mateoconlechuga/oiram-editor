@@ -387,7 +387,7 @@ bool saveFilePack(const char *filename, const char *description, const char *var
     FILE *out_file = NULL;
 
     /* header for TI files */
-    uint8_t header[]  = { 0x2A,0x2A,0x54,0x49,0x38,0x33,0x46,0x2A,0x1A,0x0A,'O','i','r','a','m',' ','L','e','v','e','l','P','a','c','k' };
+    uint8_t header[]  = { 0x2A,0x2A,0x54,0x49,0x38,0x33,0x46,0x2A,0x1A,0x0A,0x00 };
     uint8_t len_high;
     uint8_t len_low;
     uint8_t *output = NULL;
