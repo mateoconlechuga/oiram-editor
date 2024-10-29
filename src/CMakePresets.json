@@ -1,0 +1,328 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 1
+  },
+  "configurePresets": [
+    {
+      "name": "ninja-vcpkg",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "binaryDir": "${sourceDir}/oiram-editor.build/${presetName}",
+      "installDir": "${sourceDir}/oiram-editor.build/${presetName}",
+      "cacheVariables": {
+        "VCPKG_MANIFEST_MODE": {
+          "type": "BOOL",
+          "value": "True"
+        },
+        "VCPKG_MANIFEST_INSTALL": {
+          "type": "BOOL",
+          "value": "True"
+        },
+        "VCPKG_OVERLAY_TRIPLETS": {
+          "type": "STRING",
+          "value": "${sourceDir}/triplets"
+        },
+        "VCPKG_INSTALL_OPTIONS": {
+          "type": "STRING",
+          "value": "--allow-unsupported"
+        }
+      }
+    },
+    {
+      "name": "ninja-vcpkg-x64",
+      "hidden": true,
+      "inherits": "ninja-vcpkg",
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      }
+    },
+    {
+      "name": "ninja-vcpkg-x86",
+      "hidden": true,
+      "inherits": "ninja-vcpkg",
+      "architecture": {
+        "strategy": "external",
+        "value": "x86"
+      }
+    },
+    {
+      "name": "ninja-vcpkg-arm64",
+      "hidden": true,
+      "inherits": "ninja-vcpkg",
+      "architecture": {
+        "strategy": "external",
+        "value": "arm64"
+      }
+    },
+    {
+      "name": "Qt5",
+      "hidden": true,
+      "cacheVariables": {
+        "USE_QT5": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+      }
+    },
+    {
+      "name": "win-only",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "mac-only",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "linux-only",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "Win-x64-Qt6",
+      "inherits": [ "ninja-vcpkg-x64", "win-only" ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-windows-static"
+        }
+      }
+    },
+    {
+      "name": "Win-x86-Qt6",
+      "inherits": [ "ninja-vcpkg-x86", "win-only" ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x86-windows-static"
+        }
+      }
+    },
+    {
+      "name": "Mac-x64-Qt6",
+      "inherits": [ "ninja-vcpkg-x64", "mac-only" ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-osx"
+        }
+      }
+    },
+    {
+      "name": "Mac-arm64-Qt6",
+      "inherits": [ "ninja-vcpkg-arm64", "mac-only" ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "arm64-osx"
+        }
+      }
+    },
+    {
+      "name": "Linux-x64-Qt6",
+      "inherits": [ "ninja-vcpkg-x64", "linux-only" ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-linux"
+        }
+      }
+    },
+    {
+      "name": "Linux-x64-Qt6-Dynamic",
+      "inherits": [ "ninja-vcpkg-x64", "linux-only" ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-linux-dynamic"
+        }
+      }
+    },
+    {
+      "name": "Win-x64-Qt5",
+      "inherits": [ "Win-x64-Qt6", "Qt5" ]
+    },
+    {
+      "name": "Win-x86-Qt5",
+      "inherits": [ "Win-x86-Qt6", "Qt5" ]
+    },
+    {
+      "name": "Mac-x64-Qt5",
+      "inherits": [ "Mac-x64-Qt6", "Qt5" ]
+    },
+    {
+      "name": "Mac-arm64-Qt5",
+      "inherits": [ "Mac-arm64-Qt6", "Qt5" ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Win-x64-Qt6-Debug",
+      "configurePreset": "Win-x64-Qt6",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Win-x64-Qt6-RelWithDebInfo",
+      "configurePreset": "Win-x64-Qt6",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Win-x64-Qt6-Release",
+      "configurePreset": "Win-x64-Qt6",
+      "configuration": "Release"
+    },
+    {
+      "name": "Win-x64-Qt5-Debug",
+      "configurePreset": "Win-x64-Qt5",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Win-x64-Qt5-RelWithDebInfo",
+      "configurePreset": "Win-x64-Qt5",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Win-x64-Qt5-Release",
+      "configurePreset": "Win-x64-Qt5",
+      "configuration": "Release"
+    },
+    {
+      "name": "Win-x86-Qt6-Debug",
+      "configurePreset": "Win-x86-Qt6",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Win-x86-Qt6-RelWithDebInfo",
+      "configurePreset": "Win-x86-Qt6",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Win-x86-Qt6-Release",
+      "configurePreset": "Win-x86-Qt6",
+      "configuration": "Release"
+    },
+    {
+      "name": "Win-x86-Qt5-Debug",
+      "configurePreset": "Win-x86-Qt5",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Win-x86-Qt5-RelWithDebInfo",
+      "configurePreset": "Win-x86-Qt5",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Win-x86-Qt5-Release",
+      "configurePreset": "Win-x86-Qt5",
+      "configuration": "Release"
+    },
+    {
+      "name": "Mac-x64-Qt6-Debug",
+      "configurePreset": "Mac-x64-Qt6",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Mac-x64-Qt6-RelWithDebInfo",
+      "configurePreset": "Mac-x64-Qt6",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Mac-x64-Qt6-Release",
+      "configurePreset": "Mac-x64-Qt6",
+      "configuration": "Release"
+    },
+    {
+      "name": "Mac-x64-Qt5-Debug",
+      "configurePreset": "Mac-x64-Qt5",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Mac-x64-Qt5-RelWithDebInfo",
+      "configurePreset": "Mac-x64-Qt5",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Mac-x64-Qt5-Release",
+      "configurePreset": "Mac-x64-Qt5",
+      "configuration": "Release"
+    },
+    {
+      "name": "Mac-arm64-Qt6-Debug",
+      "configurePreset": "Mac-arm64-Qt6",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Mac-arm64-Qt6-RelWithDebInfo",
+      "configurePreset": "Mac-arm64-Qt6",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Mac-arm64-Qt6-Release",
+      "configurePreset": "Mac-arm64-Qt6",
+      "configuration": "Release"
+    },
+    {
+      "name": "Mac-arm64-Qt5-Debug",
+      "configurePreset": "Mac-arm64-Qt5",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Mac-arm64-Qt5-RelWithDebInfo",
+      "configurePreset": "Mac-arm64-Qt5",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Mac-arm64-Qt5-Release",
+      "configurePreset": "Mac-arm64-Qt5",
+      "configuration": "Release"
+    },
+    {
+      "name": "Linux-x64-Qt6-Debug",
+      "configurePreset": "Linux-x64-Qt6",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Linux-x64-Qt6-RelWithDebInfo",
+      "configurePreset": "Linux-x64-Qt6",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Linux-x64-Qt6-Release",
+      "configurePreset": "Linux-x64-Qt6",
+      "configuration": "Release"
+    },
+    {
+      "name": "Linux-x64-Qt6-Dynamic-Debug",
+      "configurePreset": "Linux-x64-Qt6-Dynamic",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Linux-x64-Qt6-Dynamic-RelWithDebInfo",
+      "configurePreset": "Linux-x64-Qt6-Dynamic",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Linux-x64-Qt6-Dynamic-Release",
+      "configurePreset": "Linux-x64-Qt6-Dynamic",
+      "configuration": "Release"
+    }
+  ]
+}

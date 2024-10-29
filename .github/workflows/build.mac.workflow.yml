@@ -1,0 +1,60 @@
+name: Build macOS
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: "Build: ${{ matrix.os }} Qt${{ matrix.qtvershort }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-12, macos-13, macos-14]
+        config: [Release]
+        include:
+          - os: macos-12
+            arch: x64
+            qtver: Qt5
+            qtvershort: "5_intel"
+          - os: macos-13
+            arch: x64
+            qtver: Qt6
+            qtvershort: "6_intel"
+          - os: macos-14
+            arch: arm64
+            qtver: Qt6
+            qtvershort: "6_arm"
+
+    steps:
+    - name: Checkout Git Repo
+      uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+
+    - name: Install dependencies
+      run: |
+        set -e
+        brew install automake autoconf libtool libusb
+
+    - name: Install latest CMake
+      uses: lukka/get-cmake@a70f1cfa1857a3eecfe0d34962269e1b1e8be56c # latest as of 2024-08-08
+
+    - name: Restore artifacts, or setup vcpkg (do not install any package)
+      uses: lukka/run-vcpkg@d87e7fac99f22776a4973d7e413921ea254c1fc9 # latest as of 2024-08-08
+      with:
+        vcpkgJsonGlob: '**/src/vcpkg.json'
+
+    - name: Build Oiram Editor ${{ matrix.qtver }} ${{ matrix.config }} on MacOS ${{ matrix.arch }}
+      uses: lukka/run-cmake@4b1adc1944be8367be9f4e08303ce49918db8e3c # latest as of 2024-08-08
+      with:
+        cmakeListsTxtPath: '${{ github.workspace }}/src/CMakeLists.txt'
+        configurePreset: 'Mac-${{ matrix.arch }}-${{ matrix.qtver }}'
+        configurePresetAdditionalArgs: "['-DDEPS_RELEASE_ONLY=ON', '-DSHORT_VERSION=v3.0']"
+        buildPreset: 'Mac-${{ matrix.arch }}-${{ matrix.qtver }}-${{ matrix.config }}'
+      env:
+        VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.arch }}-osx-release
+        VCPKG_FORCE_SYSTEM_BINARIES: 1

@@ -1,0 +1,38 @@
+{
+  "name": "oiram-editor",
+  "version-string": "2.0",
+  "features": {
+    "qt5": {
+      "description": "Build with Qt5",
+      "dependencies": [
+        {
+          "name": "qt5-base",
+          "default-features": false
+        }
+      ]
+    },
+    "qt6": {
+      "description": "Build with Qt6",
+      "dependencies": [
+        {
+          "name": "qtbase",
+          "default-features": false,
+          "features": [ "dbus", "gui", "network", "widgets", "png" ]
+        },
+        {
+          "name": "qtbase",
+          "default-features": false,
+          "features": [ "fontconfig", "xcb" ],
+          "platform": "linux"
+        }
+      ]
+    }
+  },
+  "builtin-baseline": "8b9bcb28e258026532f8d1eb2ffb7650b420fd6a",
+  "overrides": [
+    {
+      "name": "qtbase",
+      "version": "6.6.3"
+    }
+  ]
+}

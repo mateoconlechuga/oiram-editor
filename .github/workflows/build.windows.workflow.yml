@@ -1,0 +1,58 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: "Build: Windows ${{ matrix.arch }}-${{ matrix.config }}-${{ matrix.qtver }}"
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64]
+        qtver: [Qt5, Qt6]
+        config: [Release]
+        include:
+          - arch: x64
+            arch_name: 64-bit
+            arch_suffix: "64"
+    steps:
+    - name: Remove Perl Strawberry installation
+      # Removes conflicting headers from include paths
+      run: |
+        Remove-Item -Recurse -Force C:/Strawberry
+
+    - name: Checkout Git Repo
+      uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+
+    - name: Install latest CMake
+      uses: lukka/get-cmake@a70f1cfa1857a3eecfe0d34962269e1b1e8be56c # latest as of 2024-08-08
+
+    - name: Restore artifacts, or setup vcpkg (do not install any package)
+      uses: lukka/run-vcpkg@d87e7fac99f22776a4973d7e413921ea254c1fc9 # latest as of 2024-08-08
+      with:
+        vcpkgJsonGlob: '**/src/vcpkg.json'
+
+    - name: Build Oiram Editor ${{ matrix.qtver }} ${{ matrix.config }} on Windows ${{ matrix.arch_name }}
+      uses: lukka/run-cmake@4b1adc1944be8367be9f4e08303ce49918db8e3c # latest as of 2024-08-08
+      with:
+        cmakeListsTxtPath: '${{ github.workspace }}/src/CMakeLists.txt'
+        configurePreset: 'Win-${{ matrix.arch }}-${{ matrix.qtver }}'
+        buildPreset: 'Win-${{ matrix.arch }}-${{ matrix.qtver }}-${{ matrix.config }}'
+      env:
+        VCPKG_DEFAULT_TRIPLET: ${{ matrix.arch }}-windows
+        VCPKG_DEFAULT_HOST_TRIPLET: x64-windows-static-release
+        VCPKG_FORCE_SYSTEM_BINARIES: 1
+
+    - name: Upload ${{ matrix.arch_name }} ${{ matrix.config }} ${{ matrix.qtver }} EXE
+      uses: actions/upload-artifact@v3
+      with:
+        name: oiram_editor_win${{ matrix.arch_suffix }}_${{ matrix.qtver }}_master
+        path: ${{ github.workspace }}/src/oiram-editor.build/Win-${{ matrix.arch }}-${{ matrix.qtver }}/${{ matrix.config }}/oiram-editor.exe
