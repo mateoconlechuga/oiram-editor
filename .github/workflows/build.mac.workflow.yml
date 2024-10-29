@@ -2,9 +2,10 @@ name: Build macOS
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - master
+    tags:
+      - v*
 
 jobs:
   build:
