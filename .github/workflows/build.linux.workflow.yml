@@ -16,12 +16,9 @@ jobs:
         os: [ubuntu-20.04]
         arch: [x64]
         config: [Release]
-        statictype: [ON]
         include:
-          - statictype: ON
-            qtver: Qt6
+          - qtver: Qt6
             host_triplet: release
-            release_suffix: static
 
     steps:
     - name: Checkout Git Repo
@@ -51,6 +48,7 @@ jobs:
       with:
         cmakeListsTxtPath: '${{ github.workspace }}/src/CMakeLists.txt'
         configurePreset: 'Linux-${{ matrix.arch }}-${{ matrix.qtver }}'
+        configurePresetAdditionalArgs: "['-DDEPS_RELEASE_ONLY=ON']"
         buildPreset: 'Linux-${{ matrix.arch }}-${{ matrix.qtver }}-${{ matrix.config }}'
       env:
         VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.arch }}-linux-${{ matrix.host_triplet }}

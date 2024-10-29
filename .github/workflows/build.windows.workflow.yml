@@ -45,6 +45,7 @@ jobs:
       with:
         cmakeListsTxtPath: '${{ github.workspace }}/src/CMakeLists.txt'
         configurePreset: 'Win-${{ matrix.arch }}-${{ matrix.qtver }}'
+        configurePresetAdditionalArgs: "['-DDEPS_RELEASE_ONLY=ON']"
         buildPreset: 'Win-${{ matrix.arch }}-${{ matrix.qtver }}-${{ matrix.config }}'
       env:
         VCPKG_DEFAULT_TRIPLET: ${{ matrix.arch }}-windows

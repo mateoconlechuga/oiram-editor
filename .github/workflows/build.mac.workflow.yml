@@ -53,8 +53,9 @@ jobs:
       with:
         cmakeListsTxtPath: '${{ github.workspace }}/src/CMakeLists.txt'
         configurePreset: 'Mac-${{ matrix.arch }}-${{ matrix.qtver }}'
-        configurePresetAdditionalArgs: "['-DDEPS_RELEASE_ONLY=ON', '-DSHORT_VERSION=v3.0']"
+        configurePresetAdditionalArgs: "['-DDEPS_RELEASE_ONLY=ON']"
         buildPreset: 'Mac-${{ matrix.arch }}-${{ matrix.qtver }}-${{ matrix.config }}'
       env:
         VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.arch }}-osx-release
         VCPKG_FORCE_SYSTEM_BINARIES: 1
+
