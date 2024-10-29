@@ -108,6 +108,8 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p), ui(new Ui::MainWindow) {
 
     setBrushMode();
     clrNeedSave();
+
+    setWindowTitle("Oiram Level Editor " VERSION_STRING);
 }
 
 void MainWindow::saveImage() {

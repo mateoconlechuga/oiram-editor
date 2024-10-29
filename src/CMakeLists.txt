@@ -123,6 +123,17 @@ target_link_libraries(oiram-editor PRIVATE
     Qt::Widgets
 )
 
+execute_process(
+    COMMAND git describe --abbrev=8 --dirty --always --tags
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE VERSION_STRING
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+target_compile_definitions(oiram-editor PRIVATE
+    VERSION_STRING=\"${VERSION_STRING}\"
+)
+
 include(CheckIPOSupported)
 check_ipo_supported(RESULT lto_supported OUTPUT error)
 if(lto_supported)
