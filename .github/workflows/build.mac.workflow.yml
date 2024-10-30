@@ -60,9 +60,13 @@ jobs:
         VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.arch }}-osx-release
         VCPKG_FORCE_SYSTEM_BINARIES: 1
 
+    - name: Zip ${{ matrix.os }} Qt${{ matrix.qtvershort }}
+      run: |
+        cd ${{ github.workspace }}/src/oiram-editor.build/Mac-${{ matrix.arch }}-${{ matrix.qtver }}/${{ matrix.config }} && zip -r9 oiram-editor.app.zip oiram-editor.app
+
     - name: Upload ${{ matrix.os }} Qt${{ matrix.qtvershort }}
       uses: actions/upload-artifact@v3
       with:
-        name: oiram_editor_mac_qt${{ matrix.qtvershort }}_master
-        path: ${{ github.workspace }}/src/oiram-editor.build/Mac-${{ matrix.arch }}-${{ matrix.qtver }}/${{ matrix.config }}/oiram-editor.app
+        name: oiram_editor_mac_qt${{ matrix.qtvershort }}_master_app
+        path: ${{ github.workspace }}/src/oiram-editor.build/Mac-${{ matrix.arch }}-${{ matrix.qtver }}/${{ matrix.config }}/oiram-editor.app.zip
 

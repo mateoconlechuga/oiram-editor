@@ -148,9 +148,32 @@ endif()
 
 target_compile_definitions(oiram-editor PRIVATE $<$<CONFIG:Release,RelWithDebInfo>:QT_NO_DEBUG_OUTPUT>)
 
+if(APPLE)
+    set(MACOSX_BUNDLE_ICON_FILE icon.icns)
+    set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon.icns")
+    set_source_files_properties(${app_icon_macos} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    target_sources(oiram-editor PUBLIC
+        ${app_icon_macos}
+    )
+    set_target_properties(oiram-editor PROPERTIES
+        MACOSX_BUNDLE_COPYRIGHT "mateoconlechuga"
+        MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION_STRING}"
+    )
+endif()
+
 install(TARGETS oiram-editor
     BUNDLE DESTINATION .
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 message("Binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
+
+
+if(COMMAND qt_generate_deploy_app_script)
+    qt_generate_deploy_app_script(
+        TARGET oiram-editor
+        FILENAME_VARIABLE deploy_script
+        NO_UNSUPPORTED_PLATFORM_ERROR
+    )
+    install(SCRIPT ${deploy_script})
+endif()
