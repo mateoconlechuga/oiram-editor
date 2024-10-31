@@ -94,7 +94,10 @@ if(COMMAND qt_standard_project_setup)
 endif()
 
 if(APPLE)
-    set(MAYBE_MACOSX_BUNDLE MACOSX_BUNDLE)
+    set(GUI_TYPE MACOSX_BUNDLE)
+endif()
+if(WIN32)
+    set(GUI_TYPE WIN32)
 endif()
 
 qt_add_resources(resources resources.qrc)
@@ -112,13 +115,13 @@ set(sources
 )
 
 if(WIN32)
-    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/os/windows/oiram-editor.rc")
+    set(WINDOWS_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/os/windows/oiram-editor.rc")
 endif()
 
 if(USE_QT5)
-    add_executable(oiram-editor ${MAYBE_MACOSX_BUNDLE} ${APP_ICON_RESOURCE_WINDOWS} ${sources})
+    add_executable(oiram-editor ${GUI_TYPE} ${WINDOWS_ICON} ${sources})
 else()
-    qt_add_executable(oiram-editor ${MAYBE_MACOSX_BUNDLE}${APP_ICON_RESOURCE_WINDOWS} ${sources})
+    qt_add_executable(oiram-editor ${GUI_TYPE}${WINDOWS_ICON} ${sources})
 endif()
 
 target_link_libraries(oiram-editor PRIVATE
