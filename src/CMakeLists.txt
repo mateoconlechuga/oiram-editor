@@ -111,10 +111,14 @@ set(sources
     ${resources}
 )
 
+if(WIN32)
+    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/os/windows/oiram-editor.rc")
+endif()
+
 if(USE_QT5)
-    add_executable(oiram-editor ${MAYBE_MACOSX_BUNDLE} ${sources})
+    add_executable(oiram-editor ${MAYBE_MACOSX_BUNDLE} ${APP_ICON_RESOURCE_WINDOWS} ${sources})
 else()
-    qt_add_executable(oiram-editor ${MAYBE_MACOSX_BUNDLE} ${sources})
+    qt_add_executable(oiram-editor ${MAYBE_MACOSX_BUNDLE}${APP_ICON_RESOURCE_WINDOWS} ${sources})
 endif()
 
 target_link_libraries(oiram-editor PRIVATE
@@ -150,7 +154,7 @@ target_compile_definitions(oiram-editor PRIVATE $<$<CONFIG:Release,RelWithDebInf
 
 if(APPLE)
     set(MACOSX_BUNDLE_ICON_FILE icon.icns)
-    set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon.icns")
+    set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/resources/os/mac/icon.icns")
     set_source_files_properties(${app_icon_macos} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
     target_sources(oiram-editor PUBLIC
         ${app_icon_macos}
